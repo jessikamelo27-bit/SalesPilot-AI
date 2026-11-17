@@ -7,20 +7,49 @@ export default {
   theme: {
     extend: {
       colors: {
-        navy: {
-          950: '#030610', // Sidebar almost-black blue
-          900: '#060B19', // Main dark navy background
-          850: '#0B1326', // Card deep blue-graphite
-          800: '#101B33', // Card elevated surface
-          700: '#1A2744', // Subtle borders & hover states
+        cream: {
+          DEFAULT: '#F8F5EF',
+          soft: '#FAF8F4',
+          warm: '#F1ECE1',
         },
-        electric: {
-          500: '#3B82F6',
-          600: '#2563EB',
-          400: '#60A5FA',
+        surface: '#FFFFFF',
+        ink: {
+          DEFAULT: '#252722',
+          muted: '#4A4944',
+        },
+        warmgray: {
+          DEFAULT: '#77756F',
+          light: '#9E9B93',
+        },
+        burnt: {
+          DEFAULT: '#C56B3D',
+          hover: '#AF5B30',
+          light: '#F7EBE4',
+        },
+        coral: {
+          DEFAULT: '#D9856C',
+          light: '#F9EFEA',
+        },
+        terracotta: {
+          DEFAULT: '#E9B29B',
+          light: '#FBF4F0',
+        },
+        sage: {
+          DEFAULT: '#537A60',
+          light: '#EBF2ED',
+        },
+        crimson: {
+          DEFAULT: '#B44C3B',
+          light: '#F9ECEA',
+        },
+        sand: {
+          DEFAULT: '#E8E2D8',
+          strong: '#D6CFC2',
         },
       },
       fontFamily: {
+        display: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+        mono: ['"IBM Plex Mono"', 'monospace'],
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
       },
     },

@@ -11,7 +11,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { ArrowUpDown, Package, Search } from 'lucide-react';
+import { ArrowUpDown, Search } from 'lucide-react';
 import { api, formatCompactCurrency, formatCurrency, formatNumber, formatPercent } from '../lib/api';
 import { useFilters } from '../context/FilterContext';
 import {
@@ -22,6 +22,9 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  DeltaBadge,
+  EditorialSectionTitle,
+  EditorialSubheader,
   EmptyDataState,
   LoadingState,
 } from '../components/ui/Primitives';
@@ -37,7 +40,7 @@ export const ProductsPage: React.FC = () => {
   });
 
   if (isLoading) {
-    return <LoadingState message="Carregando matriz de rentabilidade por produto..." />;
+    return <LoadingState message="Auditando matriz de rentabilidade e giro por SKU..." />;
   }
 
   if (!data || !data.has_data) {
@@ -59,124 +62,126 @@ export const ProductsPage: React.FC = () => {
     });
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-bold tracking-tight text-white">Desempenho de Produtos</h1>
-            <Badge variant="electric">{data.top_products.length} SKUs ativos</Badge>
-          </div>
-          <p className="text-xs text-slate-400 mt-1">
-            Análise detalhada de volume, faturamento líquido, descontos, custo, margem bruta e variação entre períodos.
-          </p>
-        </div>
+    <div className="space-y-10">
+      <EditorialSectionTitle
+        index="04"
+        kicker="ARQUITETURA DE PORTFÓLIO & MARGENS"
+        title="Análise de Produtos e Rentabilidade por SKU"
+        subtitle="Demonstrativo comercial combinando volume expedido, receita líquida, descontos praticados, custo total e margem bruta."
+        rightContent={
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative">
+              <Search className="w-3.5 h-3.5 text-warmgray absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Filtrar SKU ou categoria..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="bg-surface border border-sand-strong rounded-md pl-8 pr-3 py-1.5 text-xs text-ink placeholder:text-warmgray focus:outline-none focus:border-burnt"
+              />
+            </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="relative">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Buscar produto ou categoria..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-navy-850 border border-slate-700 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
-            />
-          </div>
-
-          <Button
-            variant={sortBy === 'net_revenue' ? 'primary' : 'secondary'}
-            size="sm"
-            onClick={() => setSortBy('net_revenue')}
-          >
-            <ArrowUpDown className="w-3.5 h-3.5" />
-            Receita
-          </Button>
-          <Button
-            variant={sortBy === 'items_sold' ? 'primary' : 'secondary'}
-            size="sm"
-            onClick={() => setSortBy('items_sold')}
-          >
-            <ArrowUpDown className="w-3.5 h-3.5" />
-            Unidades
-          </Button>
-          {hasCost && (
             <Button
-              variant={sortBy === 'margin_pct' ? 'primary' : 'secondary'}
+              variant={sortBy === 'net_revenue' ? 'primary' : 'secondary'}
               size="sm"
-              onClick={() => setSortBy('margin_pct')}
+              onClick={() => setSortBy('net_revenue')}
             >
               <ArrowUpDown className="w-3.5 h-3.5" />
-              Margem (%)
+              Receita
             </Button>
-          )}
-          <Button
-            variant={sortBy === 'growth_pct' ? 'primary' : 'secondary'}
-            size="sm"
-            onClick={() => setSortBy('growth_pct')}
-          >
-            <ArrowUpDown className="w-3.5 h-3.5" />
-            Crescimento (%)
-          </Button>
-        </div>
-      </div>
+            <Button
+              variant={sortBy === 'items_sold' ? 'primary' : 'secondary'}
+              size="sm"
+              onClick={() => setSortBy('items_sold')}
+            >
+              <ArrowUpDown className="w-3.5 h-3.5" />
+              Volume
+            </Button>
+            {hasCost && (
+              <Button
+                variant={sortBy === 'margin_pct' ? 'primary' : 'secondary'}
+                size="sm"
+                onClick={() => setSortBy('margin_pct')}
+              >
+                <ArrowUpDown className="w-3.5 h-3.5" />
+                Margem (%)
+              </Button>
+            )}
+            <Button
+              variant={sortBy === 'growth_pct' ? 'primary' : 'secondary'}
+              size="sm"
+              onClick={() => setSortBy('growth_pct')}
+            >
+              <ArrowUpDown className="w-3.5 h-3.5" />
+              Variação (%)
+            </Button>
+          </div>
+        }
+      />
 
-      {/* Product Revenue & Margin Chart */}
+      {/* Wide Visual Composition: Net Revenue vs Profit Margin % */}
       <Card>
         <CardHeader>
-          <CardTitle>Matriz Receita Líquida vs. Margem de Lucro por Produto</CardTitle>
+          <CardTitle>Composição Receita Líquida vs. Margem de Lucro Bruta por Produto</CardTitle>
           <CardDescription>
-            Compare o volume financeiro gerado por cada SKU com sua respectiva margem percentual
+            Barras em terracota/laranja indicam o faturamento líquido (eixo esquerdo); linha em verde sálvia indica a
+            margem percentual (eixo direito)
           </CardDescription>
         </CardHeader>
         <CardContent className="h-80">
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={filteredProducts} margin={{ top: 10, right: 20, left: 10, bottom: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#E8E2D8" />
               <XAxis
                 dataKey="product"
-                stroke="#94A3B8"
+                stroke="#252722"
                 fontSize={11}
+                tickLine={false}
                 tickFormatter={(v: string) => (v.length > 18 ? `${v.slice(0, 16)}…` : v)}
               />
               <YAxis
                 yAxisId="left"
-                stroke="#3B82F6"
+                stroke="#C56B3D"
                 fontSize={11}
+                tickLine={false}
                 tickFormatter={(v) => formatCompactCurrency(v)}
               />
               {hasCost && (
                 <YAxis
                   yAxisId="right"
                   orientation="right"
-                  stroke="#10B981"
+                  stroke="#537A60"
                   fontSize={11}
+                  tickLine={false}
                   tickFormatter={(v) => `${v}%`}
                 />
               )}
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#0B1326',
-                  borderColor: '#1E293B',
-                  borderRadius: '0.5rem',
+                  backgroundColor: '#FFFFFF',
+                  borderColor: '#E8E2D8',
+                  borderRadius: '0.375rem',
+                  color: '#252722',
                   fontSize: '12px',
                 }}
                 formatter={(value: number, name: string) => [
                   name === 'net_revenue' ? formatCurrency(value) : formatPercent(value),
-                  name === 'net_revenue' ? 'Faturamento Líquido' : 'Margem Bruta (%)',
+                  name === 'net_revenue' ? 'Receita Líquida' : 'Margem Bruta (%)',
                 ]}
               />
               <Legend
-                formatter={(v) => (v === 'net_revenue' ? 'Faturamento Líquido' : 'Margem de Lucro (%)')}
+                formatter={(v) => (v === 'net_revenue' ? 'Receita Líquida (R$)' : 'Margem de Lucro (%)')}
               />
-              <Bar yAxisId="left" dataKey="net_revenue" fill="#3B82F6" radius={[4, 4, 0, 0]} />
+              <Bar yAxisId="left" dataKey="net_revenue" fill="#D9856C" radius={[3, 3, 0, 0]} isAnimationActive={false} />
               {hasCost && (
                 <Line
                   yAxisId="right"
                   type="monotone"
                   dataKey="margin_pct"
-                  stroke="#10B981"
+                  stroke="#537A60"
                   strokeWidth={2.5}
-                  dot={{ r: 4 }}
+                  dot={{ r: 4, fill: '#537A60' }}
+                  isAnimationActive={false}
                 />
               )}
             </ComposedChart>
@@ -184,98 +189,102 @@ export const ProductsPage: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Complete Products Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Tabela Analítica de Produtos</CardTitle>
-          <CardDescription>Clique em um produto para filtrar o recorte global se desejar</CardDescription>
-        </CardHeader>
-        <CardContent>
+      {/* Editorial Accounting Table of Products */}
+      <section>
+        <EditorialSubheader
+          rubric="DEMONSTRATIVO ANALÍTICO POR ITEM"
+          title="Tabela Completa do Portfólio Comercial"
+          description="Clique sobre qualquer linha para isolar o produto nos filtros globais"
+        />
+
+        <Card className="overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-navy-950 text-slate-400">
+              <thead className="bg-cream-warm text-warmgray font-mono text-[10px] uppercase tracking-wider border-b border-sand">
                 <tr>
-                  <th className="py-3 px-3">Produto</th>
-                  <th className="py-3 px-3">Categoria</th>
-                  <th className="py-3 px-3 text-right">Qtd. Vendida</th>
-                  <th className="py-3 px-3 text-right">Pedidos</th>
-                  <th className="py-3 px-3 text-right">Preço Médio</th>
-                  <th className="py-3 px-3 text-right">Descontos</th>
-                  <th className="py-3 px-3 text-right">Receita Líquida</th>
-                  <th className="py-3 px-3 text-right">Lucro Bruto</th>
-                  <th className="py-3 px-3 text-right">Margem (%)</th>
-                  <th className="py-3 px-3 text-right">Share (%)</th>
-                  <th className="py-3 px-3 text-right">Variação</th>
-                  <th className="py-3 px-3 text-center">Diagnóstico</th>
+                  <th className="py-3.5 px-4">Produto / SKU</th>
+                  <th className="py-3.5 px-3">Categoria</th>
+                  <th className="py-3.5 px-3 text-right">Unidades</th>
+                  <th className="py-3.5 px-3 text-right">Pedidos</th>
+                  <th className="py-3.5 px-3 text-right">Preço Médio</th>
+                  <th className="py-3.5 px-3 text-right">Descontos</th>
+                  <th className="py-3.5 px-3 text-right">Receita Líquida</th>
+                  <th className="py-3.5 px-3 text-right">Lucro Bruto</th>
+                  <th className="py-3.5 px-3 text-right">Margem</th>
+                  <th className="py-3.5 px-3 text-right">Share</th>
+                  <th className="py-3.5 px-3 text-right">Variação</th>
+                  <th className="py-3.5 px-4 text-center">Situação</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/70">
-                {filteredProducts.map((p) => (
+              <tbody className="divide-y divide-sand bg-surface">
+                {filteredProducts.map((p, idx) => (
                   <tr
                     key={p.product}
                     onClick={() => setFilter('product', filters.product === p.product ? 'all' : p.product)}
-                    className="hover:bg-slate-900/60 cursor-pointer transition-colors"
+                    className="hover:bg-cream-soft cursor-pointer transition-colors"
                   >
-                    <td className="py-3 px-3 font-medium text-white flex items-center gap-2">
-                      <Package className="w-3.5 h-3.5 text-blue-400 shrink-0" />
-                      <span>{p.product}</span>
+                    <td className="py-3.5 px-4">
+                      <div className="flex items-center gap-2.5">
+                        <span className="font-mono text-[10px] text-burnt font-semibold">
+                          {String(idx + 1).padStart(2, '0')}
+                        </span>
+                        <span className="font-display font-bold text-ink">{p.product}</span>
+                      </div>
                     </td>
-                    <td className="py-3 px-3 text-slate-300">{p.category}</td>
-                    <td className="py-3 px-3 text-right text-slate-200">{formatNumber(p.items_sold)}</td>
-                    <td className="py-3 px-3 text-right text-slate-300">{formatNumber(p.orders)}</td>
-                    <td className="py-3 px-3 text-right text-slate-300">{formatCurrency(p.avg_unit_price)}</td>
-                    <td className="py-3 px-3 text-right text-slate-400">{formatCurrency(p.discounts)}</td>
-                    <td className="py-3 px-3 text-right font-semibold text-white">
+                    <td className="py-3.5 px-3 text-warmgray">{p.category}</td>
+                    <td className="py-3.5 px-3 text-right font-mono text-ink">{formatNumber(p.items_sold)}</td>
+                    <td className="py-3.5 px-3 text-right font-mono text-warmgray">{formatNumber(p.orders)}</td>
+                    <td className="py-3.5 px-3 text-right font-mono text-ink">{formatCurrency(p.avg_unit_price)}</td>
+                    <td className="py-3.5 px-3 text-right font-mono text-crimson">
+                      {formatCurrency(p.discounts)}
+                    </td>
+                    <td className="py-3.5 px-3 text-right font-mono font-bold text-ink">
                       {formatCurrency(p.net_revenue)}
                     </td>
-                    <td className="py-3 px-3 text-right text-slate-200">
+                    <td className="py-3.5 px-3 text-right font-mono text-ink">
                       {hasCost ? formatCurrency(p.gross_profit) : 'Indisponível'}
                     </td>
-                    <td className="py-3 px-3 text-right">
+                    <td className="py-3.5 px-3 text-right font-mono">
                       {hasCost && p.margin_pct !== null ? (
                         <span
                           className={`font-semibold ${
                             p.margin_pct < 15
-                              ? 'text-rose-400'
-                              : p.margin_pct >= 50
-                              ? 'text-emerald-400'
-                              : 'text-slate-200'
+                              ? 'text-crimson'
+                              : p.margin_pct >= 45
+                              ? 'text-sage'
+                              : 'text-ink'
                           }`}
                         >
                           {formatPercent(p.margin_pct)}
                         </span>
                       ) : (
-                        <span className="text-slate-500">N/D</span>
+                        <span className="text-warmgray">N/D</span>
                       )}
                     </td>
-                    <td className="py-3 px-3 text-right text-slate-300">{formatPercent(p.share_pct)}</td>
-                    <td className="py-3 px-3 text-right">
-                      {p.growth_pct !== null ? (
-                        <span className={p.growth_pct >= 0 ? 'text-emerald-400' : 'text-rose-400'}>
-                          {formatPercent(p.growth_pct, true)}
-                        </span>
-                      ) : (
-                        <span className="text-slate-500">N/D</span>
-                      )}
+                    <td className="py-3.5 px-3 text-right font-mono text-warmgray">
+                      {formatPercent(p.share_pct)}
                     </td>
-                    <td className="py-3 px-3 text-center">
+                    <td className="py-3.5 px-3 text-right">
+                      <DeltaBadge value={p.growth_pct} />
+                    </td>
+                    <td className="py-3.5 px-4 text-center">
                       <Badge
                         variant={
                           p.status === 'crescimento'
-                            ? 'positive'
+                            ? 'sage'
                             : p.status === 'queda'
-                            ? 'negative'
+                            ? 'crimson'
                             : p.status === 'atencao_margem'
-                            ? 'warning'
+                            ? 'burnt'
                             : 'neutral'
                         }
                       >
                         {p.status === 'crescimento'
-                          ? 'Em Expansão'
+                          ? 'Expansão'
                           : p.status === 'queda'
-                          ? 'Em Queda'
+                          ? 'Retração'
                           : p.status === 'atencao_margem'
-                          ? 'Margem Baixa'
+                          ? 'Margem Comprimida'
                           : 'Estável'}
                       </Badge>
                     </td>
@@ -284,8 +293,8 @@ export const ProductsPage: React.FC = () => {
               </tbody>
             </table>
           </div>
-        </CardContent>
-      </Card>
+        </Card>
+      </section>
     </div>
   );
 };

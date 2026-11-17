@@ -6,6 +6,32 @@ Built as an engineering showcase for applied AI in business decision-making, Sal
 
 ---
 
+## Visual Identity — Editorial Data Intelligence
+
+Designed under an **Editorial Data Intelligence / Commercial Analytics** art direction inspired by executive consulting dossiers and market intelligence publications:
+- **Warm Editorial Palette:** Soft Cream (`#F8F5EF`), Pure White Surfaces (`#FFFFFF`), Deep Ink (`#252722`), Warm Gray (`#77756F`), Burnt Orange (`#C56B3D`), Coral (`#D9856C`), Soft Terracotta (`#E9B29B`), and Discrete Sage Green (`#537A60`).
+- **Typography:** Expressive section headlines in `Plus Jakarta Sans`, financial figures and tabular metrics in `IBM Plex Mono`, and analytical prose in `Inter`.
+
+### Platform Screenshots
+
+| 01 — Executive Panorama (`Dashboard`) | 02 — Commercial Intelligence (`Diagnostics`) |
+| :---: | :---: |
+| ![01 Visão Executiva](docs/screenshots/01-visao-executiva.png) | ![02 Inteligência Comercial](docs/screenshots/02-inteligencia-comercial.png) |
+
+| 03 — Conversational Analytics Desk (`AI Assistant`) | 04 — Product Portfolio & Margins (`SKUs`) |
+| :---: | :---: |
+| ![03 Mesa Analítica IA](docs/screenshots/03-mesa-analitica-ia.png) | ![04 Portfólio & SKUs](docs/screenshots/04-portfolio-produtos.png) |
+
+| 05 — Sales Force & Territories (`Salespeople`) | 06 — Data Ingestion & Quality Audit (`Import`) |
+| :---: | :---: |
+| ![05 Força de Vendas](docs/screenshots/05-forca-de-vendas.png) | ![06 Ingestão de Dados](docs/screenshots/06-ingestao-dados.png) |
+
+| 07 — Executive Dossier & PDF/CSV Export (`Reports`) | 08 — Platform Parameters & LLM Governance (`Settings`) |
+| :---: | :---: |
+| ![07 Dossiê & Relatórios](docs/screenshots/07-dossie-relatorios.png) | ![08 Parâmetros](docs/screenshots/08-parametros-plataforma.png) |
+
+---
+
 ## 1. Business Problem Solved
 
 Organizations frequently struggle with two extremes when analyzing sales performance:

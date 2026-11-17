@@ -52,7 +52,7 @@ def detect_intent(question: str) -> str:
         if any(k in q for k in ["faturamento", "receita", "venda", "vendas", "caiu", "queda"]):
             return "diagnostico_queda_faturamento"
 
-    if any(k in q for k in ["atencao", "alerta", "problema", "risco", "anomalia", "preocupar", "pontos"]):
+    if any(k in q for k in ["atencao", "alerta", "problema", "risco", "anomalia", "preocupar", "pontos", "oportunidade", "oportunidades", "melhoria", "melhorar"]):
         return "pontos_de_atencao"
 
     if any(k in q for k in ["margem", "lucro", "rentabilidade", "custo"]):
@@ -81,7 +81,7 @@ def detect_intent(question: str) -> str:
     if any(k in q for k in ["produto", "produtos", "item", "mais vendido", "vendeu mais", "campeao", "ranking"]):
         return "produto_mais_vendido"
 
-    if any(k in q for k in ["aumentou", "diminuiu", "comparacao", "mes anterior", "periodo anterior", "evolucao", "crescimento"]):
+    if any(k in q for k in ["aumentou", "diminuiu", "comparacao", "mes anterior", "periodo anterior", "em relacao ao anterior", "evolucao", "crescimento"]):
         return "comparacao_periodos"
 
     if any(k in q for k in ["faturamento", "receita", "quanto vendemos", "total de vendas", "este mes", "neste mes"]):
@@ -414,24 +414,25 @@ def process_assistant_query(db: Session, req: AssistantQueryRequest) -> Assistan
         methodology = "Agrupamento por produto ordenado por unidades vendidas (SUM(quantity)) e por receita líquida (SUM(net_revenue))."
 
     elif intent == "categoria_maior_crescimento" or intent == "desempenho_categorias":
+        top_cat = categories[0]
         with_growth = [c for c in categories if c.growth_pct is not None]
         if with_growth:
             best_cat = max(with_growth, key=lambda c: c.growth_pct or -9999.0)
             det_answer = (
-                f"A categoria com maior crescimento foi '{best_cat.category}', avançando {best_cat.growth_pct:+.1f}% na comparação entre "
-                f"períodos ({p_label} vs. {prev_label}), atingindo {fmt_brl(best_cat.net_revenue)} de faturamento líquido "
-                f"({best_cat.share_pct:.1f}% de participação no total)."
+                f"A categoria que mais contribuiu para o faturamento no período foi '{top_cat.category}', gerando "
+                f"{fmt_brl(top_cat.net_revenue)} ({top_cat.share_pct:.1f}% de participação na receita líquida total em {top_cat.orders} pedidos). "
+                f"Em ritmo de expansão, a categoria com maior crescimento percentual entre as janelas comparadas ({p_label} vs. {prev_label}) "
+                f"foi '{best_cat.category}', avançando {best_cat.growth_pct:+.1f}%."
             )
             indicators = {
-                "Categoria em Maior Crescimento": best_cat.category,
-                "Taxa de Crescimento": f"{best_cat.growth_pct:+.1f}%",
-                "Faturamento da Categoria": fmt_brl(best_cat.net_revenue),
-                "Share na Receita Total": f"{best_cat.share_pct:.1f}%",
+                "Maior Contribuição (Receita)": f"{top_cat.category} ({fmt_brl(top_cat.net_revenue)})",
+                "Share da Categoria Líder": f"{top_cat.share_pct:.1f}%",
+                "Maior Crescimento (%)": f"{best_cat.category} ({best_cat.growth_pct:+.1f}%)",
+                "Pedidos na Categoria Líder": top_cat.orders,
             }
         else:
-            top_cat = categories[0]
             det_answer = (
-                f"A categoria líder no período selecionado é '{top_cat.category}' com {fmt_brl(top_cat.net_revenue)} "
+                f"A categoria que mais contribuiu no período selecionado foi '{top_cat.category}' com {fmt_brl(top_cat.net_revenue)} "
                 f"({top_cat.share_pct:.1f}% do faturamento total). Não há dados de período anterior equivalente suficientes para calcular taxa de crescimento."
             )
             indicators = {
@@ -448,7 +449,7 @@ def process_assistant_query(db: Session, req: AssistantQueryRequest) -> Assistan
             }
             for c in categories
         ]
-        methodology = "Comparação de receita líquida por categoria entre a janela atual e a janela anterior equivalente."
+        methodology = "Agrupamento de receita líquida por categoria e comparação determinística entre a janela atual e a janela anterior equivalente."
 
     elif intent == "produtos_em_queda":
         declining = sorted(

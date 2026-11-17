@@ -75,13 +75,16 @@ def test_assistant_queries_all_core_intents(client):
         ("Qual foi o faturamento deste mês?", "faturamento_periodo"),
         ("Qual produto vendeu mais?", "produto_mais_vendido"),
         ("Qual categoria apresentou maior crescimento?", "categoria_maior_crescimento"),
+        ("Qual categoria mais contribuiu para o faturamento?", "desempenho_categorias"),
         ("Quais produtos tiveram queda nas vendas?", "produtos_em_queda"),
         ("Qual vendedor apresentou melhor desempenho?", "desempenho_vendedores"),
         ("Qual foi o ticket médio?", "ticket_medio"),
         ("Quais produtos possuem margem de lucro mais baixa?", "produtos_menor_margem"),
         ("O faturamento aumentou ou diminuiu em relação ao mês anterior?", "comparacao_periodos"),
+        ("Como foi o resultado deste mês em relação ao anterior?", "comparacao_periodos"),
         ("Por que meu faturamento caiu?", "diagnostico_queda_faturamento"),
         ("Quais pontos merecem atenção?", "pontos_de_atencao"),
+        ("Onde estão as principais oportunidades de melhoria?", "pontos_de_atencao"),
     ]
 
     for question, expected_intent in questions_and_expected_intents:

@@ -4,27 +4,37 @@
 
 @layer base {
   body {
-    background-color: #060B19;
-    color: #F1F5F9;
+    background-color: #F8F5EF;
+    color: #252722;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
-  /* Custom subtle scrollbars for dark analytics tables and chat */
+  h1, h2, h3, h4, .font-display {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+
+  .font-mono {
+    font-family: 'IBM Plex Mono', monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Subtle warm editorial scrollbars */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
 
   ::-webkit-scrollbar-track {
-    background: #060B19;
+    background: #F8F5EF;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #1E293B;
+    background: #D6CFC2;
     border-radius: 9999px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #334155;
+    background: #C56B3D;
   }
 }

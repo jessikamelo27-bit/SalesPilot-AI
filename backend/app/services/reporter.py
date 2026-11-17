@@ -263,44 +263,48 @@ def export_report_pdf(db: Session, filters: FilterParams) -> bytes:
         pdf.set_font("Helvetica", "B" if bold else "", size)
         pdf.multi_cell(w=epw, h=h, text=_pdf_safe_text(text), new_x=XPos.LMARGIN, new_y=YPos.NEXT)
 
-    # Header
-    pdf.set_fill_color(10, 15, 30)
-    pdf.set_text_color(255, 255, 255)
+    # Editorial Masthead Header (#F8F5EF background + #C56B3D burnt orange accent bar)
     pdf.set_font("Helvetica", "B", 15)
+    pdf.set_fill_color(197, 107, 61)  # #C56B3D Laranja queimado
+    pdf.set_x(pdf.l_margin)
+    pdf.cell(w=epw, h=2.5, text="", fill=True, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+
+    pdf.set_fill_color(248, 245, 239)  # #F8F5EF Creme suave
+    pdf.set_text_color(37, 39, 34)     # #252722 Quase preto
     pdf.set_x(pdf.l_margin)
     pdf.cell(
         w=epw,
         h=12,
-        text=_pdf_safe_text("  SalesPilot AI - Relatório Executivo de Vendas"),
+        text=_pdf_safe_text("  SALESPILOT AI — DOSSIÊ EXECUTIVO DE INTELIGÊNCIA COMERCIAL"),
         fill=True,
         new_x=XPos.LMARGIN,
         new_y=YPos.NEXT,
     )
-    pdf.ln(3)
+    pdf.ln(2)
 
-    pdf.set_text_color(60, 70, 90)
+    pdf.set_text_color(119, 117, 111)  # #77756F Cinza quente
     filters_line = (
-        f"Gerado em: {report.generated_at} | Período: {report.applied_filters['start_date']} a {report.applied_filters['end_date']} | "
+        f"Emissão: {report.generated_at} | Recorte Temporal: {report.applied_filters['start_date']} a {report.applied_filters['end_date']} | "
         f"Categoria: {report.applied_filters['category']} | Vendedor: {report.applied_filters['salesperson']} | Região: {report.applied_filters['region']}"
     )
     write_line(filters_line, h=5, bold=False, size=9)
     pdf.ln(3)
 
     # 1. Resumo Executivo
-    pdf.set_text_color(15, 23, 42)
-    write_line("1. Resumo Executivo", h=7, bold=True, size=12)
-    pdf.set_text_color(40, 50, 70)
+    pdf.set_text_color(197, 107, 61)
+    write_line("SEÇÃO 01 — SÍNTESE EXECUTIVA", h=6, bold=True, size=10)
+    pdf.set_text_color(37, 39, 34)
     write_line(report.executive_summary, h=5, bold=False, size=10)
     pdf.ln(3)
 
     # 2. Indicadores Principais
     k = report.kpis
-    pdf.set_text_color(15, 23, 42)
-    write_line("2. Indicadores Principais", h=7, bold=True, size=12)
-    pdf.set_text_color(40, 50, 70)
+    pdf.set_text_color(197, 107, 61)
+    write_line("SEÇÃO 02 — INDICADORES COMERCIAIS AUDITADOS", h=6, bold=True, size=10)
+    pdf.set_text_color(37, 39, 34)
     kpi_lines = [
-        f"Faturamento Bruto: {fmt_brl(k.gross_revenue)} | Descontos: {fmt_brl(k.total_discounts)} | Faturamento Líquido: {fmt_brl(k.net_revenue)}",
-        f"Pedidos Únicos: {k.total_orders} | Produtos Vendidos: {k.total_items_sold:.0f} | Ticket Médio: {fmt_brl(k.average_ticket)}",
+        f"Faturamento Bruto: {fmt_brl(k.gross_revenue)} | Descontos: {fmt_brl(k.total_discounts)} | Receita Líquida: {fmt_brl(k.net_revenue)}",
+        f"Pedidos Únicos: {k.total_orders} | Unidades Vendidas: {k.total_items_sold:.0f} | Ticket Médio: {fmt_brl(k.average_ticket)}",
         (
             f"Lucro Bruto Estimado: {fmt_brl(k.gross_profit or 0.0)} | Margem Bruta: {k.profit_margin_pct:.1f}%"
             if k.has_cost_data
@@ -317,9 +321,9 @@ def export_report_pdf(db: Session, filters: FilterParams) -> bytes:
     pdf.ln(3)
 
     # 3. Desempenho por Produto
-    pdf.set_text_color(15, 23, 42)
-    write_line("3. Desempenho por Produto (Top Produtos)", h=7, bold=True, size=12)
-    pdf.set_text_color(40, 50, 70)
+    pdf.set_text_color(197, 107, 61)
+    write_line("SEÇÃO 03 — DESEMPENHO DO PORTFÓLIO DE PRODUTOS", h=6, bold=True, size=10)
+    pdf.set_text_color(37, 39, 34)
     for p in report.top_products[:8]:
         m_str = f" | Margem: {p.margin_pct:.1f}%" if p.margin_pct is not None else ""
         g_str = f" | Var: {p.growth_pct:+.1f}%" if p.growth_pct is not None else ""
@@ -328,18 +332,19 @@ def export_report_pdf(db: Session, filters: FilterParams) -> bytes:
     pdf.ln(3)
 
     # 4. Desempenho por Categoria & Vendedor
-    pdf.set_text_color(15, 23, 42)
-    write_line("4. Desempenho por Categoria e Vendedor", h=7, bold=True, size=12)
-    write_line("Categorias:", h=6, bold=True, size=10)
-    pdf.set_text_color(40, 50, 70)
+    pdf.set_text_color(197, 107, 61)
+    write_line("SEÇÃO 04 — CATEGORIAS E FORÇA DE VENDAS", h=6, bold=True, size=10)
+    pdf.set_text_color(37, 39, 34)
+    write_line("Desempenho por Categoria:", h=5.5, bold=True, size=9)
+    pdf.set_text_color(60, 60, 55)
     for c in report.category_performance:
         g_str = f" ({c.growth_pct:+.1f}%)" if c.growth_pct is not None else ""
         write_line(f"- {c.category}: {fmt_brl(c.net_revenue)} ({c.share_pct:.1f}% do total){g_str}", h=5, bold=False, size=9)
 
     pdf.ln(2)
-    pdf.set_text_color(15, 23, 42)
-    write_line("Vendedores:", h=6, bold=True, size=10)
-    pdf.set_text_color(40, 50, 70)
+    pdf.set_text_color(37, 39, 34)
+    write_line("Desempenho por Vendedor:", h=5.5, bold=True, size=9)
+    pdf.set_text_color(60, 60, 55)
     for s in report.salesperson_performance:
         write_line(
             f"- {s.salesperson} ({s.region}): {fmt_brl(s.net_revenue)} | {s.orders} pedidos | Ticket: {fmt_brl(s.average_ticket)} ({s.vs_team_avg_pct:+.1f}% vs. média)",
@@ -350,9 +355,9 @@ def export_report_pdf(db: Session, filters: FilterParams) -> bytes:
     pdf.ln(3)
 
     # 5. Alertas e Recomendações
-    pdf.set_text_color(15, 23, 42)
-    write_line("5. Alertas Identificados e Recomendações", h=7, bold=True, size=12)
-    pdf.set_text_color(40, 50, 70)
+    pdf.set_text_color(197, 107, 61)
+    write_line("SEÇÃO 05 — INTELIGÊNCIA COMERCIAL E HIPÓTESES DE INVESTIGAÇÃO", h=6, bold=True, size=10)
+    pdf.set_text_color(37, 39, 34)
     for a in report.alerts[:6]:
         write_line(
             f"[{a.severity.upper()}] {a.title} ({a.metric_value}): {a.observed_fact} Hipótese: {a.investigation_hypothesis}",
@@ -364,9 +369,9 @@ def export_report_pdf(db: Session, filters: FilterParams) -> bytes:
 
     if report.recommendations:
         pdf.ln(2)
-        pdf.set_text_color(15, 23, 42)
-        write_line("Recomendações Baseadas nos Dados:", h=6, bold=True, size=10)
-        pdf.set_text_color(40, 50, 70)
+        pdf.set_text_color(83, 122, 96)  # #537A60 Verde discreto
+        write_line("Diretrizes de Investigação Baseadas em Evidências:", h=5.5, bold=True, size=9)
+        pdf.set_text_color(37, 39, 34)
         for r in report.recommendations[:5]:
             write_line(f"- [{r['priority']}] {r['area']}: {r['action']}", h=5, bold=False, size=9)
 
