@@ -180,7 +180,7 @@ export const ReportsPage: React.FC = () => {
                       color: '#252722',
                       fontSize: '12px',
                     }}
-                    formatter={(v: number) => [formatCurrency(v), 'Receita Líquida']}
+                    formatter={(v: unknown) => [formatCurrency(Number(v ?? 0)), 'Receita Líquida']}
                   />
                   <Area
                     type="monotone"

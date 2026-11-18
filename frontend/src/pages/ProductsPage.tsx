@@ -164,8 +164,8 @@ export const ProductsPage: React.FC = () => {
                   color: '#252722',
                   fontSize: '12px',
                 }}
-                formatter={(value: number, name: string) => [
-                  name === 'net_revenue' ? formatCurrency(value) : formatPercent(value),
+                formatter={(value: unknown, name: unknown) => [
+                  name === 'net_revenue' ? formatCurrency(Number(value ?? 0)) : formatPercent(Number(value ?? 0)),
                   name === 'net_revenue' ? 'Receita Líquida' : 'Margem Bruta (%)',
                 ]}
               />

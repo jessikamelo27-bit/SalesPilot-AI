@@ -145,8 +145,8 @@ export const SalespeoplePage: React.FC = () => {
                   color: '#252722',
                   fontSize: '12px',
                 }}
-                formatter={(value: number, name: string) => [
-                  formatCurrency(value),
+                formatter={(value: unknown, name: unknown) => [
+                  formatCurrency(Number(value ?? 0)),
                   name === 'net_revenue' ? 'Receita Líquida' : 'Ticket Médio',
                 ]}
               />

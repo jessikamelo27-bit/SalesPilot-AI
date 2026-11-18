@@ -323,8 +323,8 @@ export const DashboardPage: React.FC = () => {
                       color: '#252722',
                       fontSize: '12px',
                     }}
-                    formatter={(value: number, name: string) => [
-                      formatCurrency(value),
+                    formatter={(value: unknown, name: unknown) => [
+                      formatCurrency(Number(value ?? 0)),
                       name === 'net_revenue' ? 'Receita Líquida' : 'Lucro Bruto Estimado',
                     ]}
                   />
@@ -381,8 +381,8 @@ export const DashboardPage: React.FC = () => {
                       color: '#252722',
                       fontSize: '12px',
                     }}
-                    formatter={(value: number, name: string) => [
-                      formatCurrency(value),
+                    formatter={(value: unknown, name: unknown) => [
+                      formatCurrency(Number(value ?? 0)),
                       name === 'net_revenue' ? 'Período Atual' : 'Período Anterior',
                     ]}
                   />
@@ -518,7 +518,7 @@ export const DashboardPage: React.FC = () => {
                         color: '#252722',
                         fontSize: '12px',
                       }}
-                      formatter={(v: number) => [formatCurrency(v), 'Receita Líquida']}
+                      formatter={(v: unknown) => [formatCurrency(Number(v ?? 0)), 'Receita Líquida']}
                     />
                     <Bar dataKey="net_revenue" radius={[0, 3, 3, 0]} isAnimationActive={false}>
                       {data.top_products.slice(0, 6).map((entry, idx) => (
@@ -622,7 +622,7 @@ export const DashboardPage: React.FC = () => {
                       color: '#252722',
                       fontSize: '12px',
                     }}
-                    formatter={(v: number) => [formatCurrency(v), 'Receita Líquida']}
+                    formatter={(v: unknown) => [formatCurrency(Number(v ?? 0)), 'Receita Líquida']}
                   />
                   <Bar dataKey="net_revenue" radius={[3, 3, 0, 0]} isAnimationActive={false}>
                     {data.salesperson_performance.map((sp) => (
